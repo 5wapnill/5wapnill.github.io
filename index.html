@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5wapnill - GitHub Repositories</title>
+    <style>
+        :root {
+            --primary-color: #58A6FF;  /* GitHub dark mode blue */
+            --secondary-color: #8B949E; /* GitHub dark mode gray */
+            --background-gradient: linear-gradient(145deg, #0D1117 0%, #161B22 100%);
+            --card-bg: rgba(33, 38, 45, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            background: var(--background-gradient);
+            color: #C9D1D9;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(13, 17, 23, 0.8);
+            padding: 16px 32px;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            margin-right: 24px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .profile-section {
+            text-align: center;
+            margin: 64px 0;
+            padding: 40px 0;
+            background: linear-gradient(145deg, #1A1F2C 0%, #0D1117 100%);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .profile-section h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+            background: linear-gradient(45deg, #58A6FF, #8B949E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .repositories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 2rem;
+        }
+
+        .repo-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #30363D;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .repo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            border-color: var(--primary-color);
+        }
+
+        .repo-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .repo-card p {
+            color: var(--secondary-color);
+            margin-bottom: 16px;
+            min-height: 60px;
+            font-size: 14px;
+        }
+
+        .repo-links a {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            margin-right: 12px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .live-site {
+            background: linear-gradient(45deg, #238636, #2EA043);
+            color: white;
+        }
+
+        .live-site:hover {
+            background: linear-gradient(45deg, #2EA043, #238636);
+        }
+
+        .view-repo {
+            background: transparent;
+            border: 1px solid #30363D;
+            color: var(--primary-color);
+        }
+
+        .view-repo:hover {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 48px 0;
+            color: var(--secondary-color);
+            margin-top: 64px;
+            border-top: 1px solid #30363D;
+        }
+
+        .error {
+            color: #F85149;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#about">About</a>
+        <a href="#repositories">Repositories</a>
+        <a href="#contact">Contact</a>
+        <a href="https://github.com/5wapnill" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+
+    <div class="container">
+        <section class="profile-section">
+            <h1>5wapnill</h1>
+            <p>GitHub Repositories</p>
+        </section>
+
+        <div class="repositories" id="repos-container"></div>
+    </div>
+
+    <footer>
+        <p>© 2024 5wapnill. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const username = '5wapnill';
+        const container = document.getElementById('repos-container');
+
+        async function getRepos() {
+            try {
+                const response = await fetch(`https://api.github.com/users/${username}/repos`);
+                const repos = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(repos.message || 'Failed to fetch repositories');
+                }
+
+                container.innerHTML = repos.map(repo => `
+                    <div class="repo-card">
+                        <h3>${repo.name}</h3>
+                        <p>${repo.description || 'No description available'}</p>
+                        <div class="repo-links">
+                            ${repo.homepage ? `
+                                <a href="${repo.homepage}" class="live-site" target="_blank" rel="noopener noreferrer">
+                                    Live Site
+                                </a>
+                            ` : ''}
+                            <a href="${repo.html_url}" class="view-repo" target="_blank" rel="noopener noreferrer">
+                                View Repo
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        getRepos();
+    </script>
+</body>
+</html>
